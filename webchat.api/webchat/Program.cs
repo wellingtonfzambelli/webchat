@@ -11,8 +11,7 @@ builder.Services.AddTransient<IChatKafka>(p =>
         builder.Configuration["kafkaConfig:TopicName"],
         builder.Configuration["kafkaConfig:BootstrapServer"],
         builder.Configuration["kafkaConfig:GroupId"],
-        p.GetService<ILogger<ChatKafka
-        >>()
+        p.GetService<ILogger<ChatKafka>>()
     )
 );
 
