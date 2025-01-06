@@ -22,12 +22,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapPost("/chat-message", async (ChatMessage request, IChatKafka chatKafka, CancellationToken cancellationToken) =>
+app.MapPost("/chat", async (ChatMessage request, IChatKafka userKafka, CancellationToken cancellationToken) =>
 {
     try
     {
-        await chatKafka.ProduceAsync(request, cancellationToken);
-        return Results.Ok($"Message produced succefully: {request.UserName}");
+        await userKafka.ProduceAsync(request, cancellationToken);
+        return Results.Ok($"Message produced succefully");
     }
     catch (Exception ex)
     {
