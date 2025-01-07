@@ -1,17 +1,26 @@
 <div class="login-container" style="width:800px; margin:0 auto; margin-top:10%;">
     <h1>Login</h1>
-    <form>
+    
+    <form  [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
             <label for="username" style="font-weight: bold;">USER NAME</label>
-            <input type="text" id="username" name="username" placeholder="Enter your username">
+            <input formControlName="userName" type="text" id="userName" name="userName" placeholder="Enter your username">
+           
+            @if (submitted && loginForm.get('userName')?.hasError('required')) {
+                <span style="color:red">Username is required</span>
+            }
         </div>
 
         <div class="form-group">
             <label style="font-weight: bold;">GENDER</label>
             <div class="gender-group" style="text-align: left;">
-                <label><input type="radio" name="gender" value="male"> Male</label>
-                <label><input type="radio" name="gender" value="female"> Female</label>
+                <label><input type="radio" formControlName="gender" name="gender" value="male"> Male</label>
+                <label><input type="radio" formControlName="gender" name="gender" value="female"> Female</label>
             </div>
+
+            @if (submitted && loginForm.get('gender')?.hasError('required')) {
+                <span style="color:red">Gender is required</span>
+            }
         </div>
 
         <button type="submit" class="login-btn">Enter</button>
