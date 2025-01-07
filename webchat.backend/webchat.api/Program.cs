@@ -1,5 +1,6 @@
 using webchat.crosscutting.Domain;
 using webchat.crosscutting.Kafka;
+using webchat.crosscutting.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,11 +23,13 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(builder.Configuration["AllowOrigins"].ToString())
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
-
+// SignalR
+builder.Services.AddSignalR();
 
 
 var app = builder.Build();
@@ -52,5 +55,8 @@ app.MapPost("/chat", async (ChatMessage request, IChatKafka userKafka, Cancellat
 
 // CORS
 app.UseCors("OriginsPolicy");
+
+// SignalR
+app.MapHub<ChatHub>("/hub/chat");
 
 app.Run();

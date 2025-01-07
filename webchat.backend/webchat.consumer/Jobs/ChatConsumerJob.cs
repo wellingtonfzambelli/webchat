@@ -1,30 +1,29 @@
 ﻿using Confluent.Kafka;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using webchat.crosscutting.Domain;
 using webchat.crosscutting.Kafka;
 
 namespace webchat.consumer.Jobs;
 
-internal sealed class ChatConsumerJob : BackgroundService
+internal class ChatConsumerJob : BackgroundService
 {
+    private readonly IConsumer<Ignore, string>? _kafkaConsumer;
+    //private readonly IHubContext<ChatHub> _hubContext;
     private readonly ILogger<ChatConsumerJob> _logger;
-    private readonly IConsumer<Ignore, string>? _consumer;
 
-    public ChatConsumerJob(IChatKafka userKafka, ILogger<ChatConsumerJob> logger)
-        : this(userKafka) =>
+    public ChatConsumerJob(IChatKafka userKafka/*, IHubContext<ChatHub> hubContext*/, ILogger<ChatConsumerJob> logger)
+        : this(userKafka)
+    {
+        // _hubContext = hubContext;
         _logger = logger;
+    }
 
     private ChatConsumerJob(IChatKafka userKafka)
     {
-        _consumer = userKafka.GetConsumer();
-        _consumer.Subscribe(userKafka.GetTopicName());
+        _kafkaConsumer = userKafka.GetConsumer();
+        _kafkaConsumer.Subscribe(userKafka.GetTopicName());
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -33,7 +32,7 @@ internal sealed class ChatConsumerJob : BackgroundService
         {
             try
             {
-                if (_consumer.Consume(TimeSpan.FromSeconds(5)) // waiting when doesn't have any message
+                if (_kafkaConsumer.Consume(TimeSpan.FromSeconds(5)) // waiting when doesn't have any message
                 is var consumeResult && consumeResult is null)
                     continue;
 
@@ -41,7 +40,9 @@ internal sealed class ChatConsumerJob : BackgroundService
 
                 ChatMessage? user = JsonSerializer.Deserialize<ChatMessage>(consumeResult.Message.Value);
 
-                _consumer.Commit(consumeResult);
+                //await _hubContext.Clients.All.SendAsync("ReceiveMessage", user, stoppingToken);
+
+                _kafkaConsumer.Commit(consumeResult);
             }
             catch (OperationCanceledException ex)
             {
@@ -54,10 +55,10 @@ internal sealed class ChatConsumerJob : BackgroundService
     {
         _logger.LogInformation("Application has finished");
 
-        if (_consumer is not null)
+        if (_kafkaConsumer is not null)
         {
-            _consumer.Close(); // Close  the cosumer 
-            _consumer.Dispose(); // dispose the resources
+            _kafkaConsumer.Close(); // Close  the cosumer 
+            _kafkaConsumer.Dispose(); // dispose the resources
         }
 
         return Task.CompletedTask;

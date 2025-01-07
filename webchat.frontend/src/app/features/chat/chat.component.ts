@@ -5,6 +5,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { AvatarService } from '../../core/services/avatar.service';
 import { ChatService } from '../../core/services/chat.service';
 import { SessionStorageService } from '../../core/services/session-storage.service';
+import { SignalrService } from '../../core/services/signalr.service';
 import { ChatMessage } from '../../shared/chatMessage';
 
 @Component({
@@ -23,6 +24,7 @@ export class ChatComponent implements OnInit {
   private _sanitizer = inject(DomSanitizer);
   private _formBuilder = inject(FormBuilder);
   
+  public signalrService = inject(SignalrService);
   public sessionService = inject(SessionStorageService);
   public avatarUrl: SafeUrl | null = null;
 
@@ -57,6 +59,7 @@ export class ChatComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchAvatar(this.sessionService.get()?.avatarId as number);
+    this.signalrService.createHubConnection();
   }
 
   fetchAvatar(id: number) {
