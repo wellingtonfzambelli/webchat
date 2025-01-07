@@ -15,6 +15,20 @@ builder.Services.AddTransient<IChatKafka>(p =>
     )
 );
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("OriginsPolicy", policy =>
+    {
+        policy.WithOrigins(builder.Configuration["AllowOrigins"].ToString())
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+
+
+
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
@@ -27,13 +41,16 @@ app.MapPost("/chat", async (ChatMessage request, IChatKafka userKafka, Cancellat
     try
     {
         await userKafka.ProduceAsync(request, cancellationToken);
-        return Results.Ok($"Message produced succefully");
+        return Results.NoContent();
     }
     catch (Exception ex)
     {
-        return Results.Problem($"Error by producing the user: {ex.Message}");
+        return Results.BadRequest($"Error by producing the user: {ex.Message}");
     }
 })
 .WithOpenApi();
+
+// CORS
+app.UseCors("OriginsPolicy");
 
 app.Run();

@@ -1,4 +1,5 @@
 export const environment = {
     production: false,
-    baseUrlAvatar: 'https://avatar.iran.liara.run/public/'
+    baseUrlAvatarApi: 'https://avatar.iran.liara.run/public/',
+    baseUrlChatApi: 'https://localhost:7036/chat'
 };

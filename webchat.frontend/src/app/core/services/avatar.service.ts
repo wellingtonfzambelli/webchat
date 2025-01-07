@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 export class AvatarService {
 
   private _http = inject(HttpClient);
-  private _baseUrl = environment.baseUrlAvatar;
+  private _baseUrl = environment.baseUrlAvatarApi;
 
   public getAvatarById(id: number) {
     return this._http.get<Blob>(`${this._baseUrl}${id}`, { responseType: 'blob' as 'json' });
