@@ -2,7 +2,7 @@
 	<div class="container p-0">
 
 		<h1 class="h3 mb-3">Messages</h1>
-		<a style="float: right;">LOGOUT</a>
+		<a href="#" (click)="sessionService.logout()" style="float: right;">LOGOUT</a>
 
 		<div style="clear: both;"></div>
 
@@ -44,7 +44,7 @@
 					<!-- MESSAGES -->
 					<app-chat-message [currentUser]="currentUser" [chatMessages]="chatMessages" [getAvatarByUserId]="getAvatarByUserId.bind(this)" ></app-chat-message>
 					
-					<!-- TEXT & SEND -->
+					<!-- INPUT & SEND -->
 					<div class="flex-grow-0 py-3 px-4 border-top">
 						<form  [formGroup]="chatForm" (ngSubmit)="onSubmit()">
 							<div class="input-group">
