@@ -30,7 +30,7 @@ export class ChatComponent implements OnInit {
   
   public signalrService = inject(SignalrService);
   public sessionService = inject(SessionStorageService);
-  public avatarUrl: SafeUrl | null = null;
+  public myAvatarUrl: SafeUrl | null = null;
   public chatMessages: ChatMessage[] = [];
 
   public chatForm = this._formBuilder.group({
@@ -66,9 +66,7 @@ export class ChatComponent implements OnInit {
     this.fetchAvatar(this.sessionService.get()?.avatarId as number);
     
     this.signalrService.createHubConnection();
-    
     this.signalrService.hubConnection?.on("ChatHub", (hubMessage: string) => {
-
       const hubMessageJson = JSON.parse(hubMessage);
 
       const chatMessage = new ChatMessage(
@@ -86,7 +84,7 @@ export class ChatComponent implements OnInit {
     this._avatarService.getAvatarById(id).subscribe({
       next: (blob: Blob) => {
         const objectUrl = URL.createObjectURL(blob);
-        this.avatarUrl = this._sanitizer.bypassSecurityTrustUrl(objectUrl);
+        this.myAvatarUrl = this._sanitizer.bypassSecurityTrustUrl(objectUrl);
       },
       error: (err) => {
         console.error('Error fetching avatar:', err);
