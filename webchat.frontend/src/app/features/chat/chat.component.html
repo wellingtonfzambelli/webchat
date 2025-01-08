@@ -42,24 +42,8 @@
 					<app-chat-head [userAvatar]="getAvatarByUserId(currentUser.userId)" [currentUser]="currentUser"></app-chat-head>
 
 					<!-- MESSAGES -->
-					<div class="position-relative">
-						<div class="chat-messages p-4">
-							<div *ngFor="let item of chatMessages">
-								<!-- MY MESSAGE -->
-								<div [ngClass]="item.userId == currentUser.userId ? 'chat-message-right pb-4' : 'chat-message-left pb-4'" >
-									<div>
-										<img [src]="item.userId == currentUser.userId ? getAvatarByUserId(currentUser.userId) : 'https://bootdey.com/img/Content/avatar/avatar1.png'" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
-										<div class="text-muted small text-nowrap mt-2">2:33 am</div>
-									</div>
-									<div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
-										<div class="font-weight-bold mb-1">{{item.userId == currentUser.userId ? 'You': item.userName}}</div>
-										{{item.message}}
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
+					<app-chat-message [currentUser]="currentUser" [chatMessages]="chatMessages" [getAvatarByUserId]="getAvatarByUserId.bind(this)" ></app-chat-message>
+					
 					<!-- TEXT & SEND -->
 					<div class="flex-grow-0 py-3 px-4 border-top">
 						<form  [formGroup]="chatForm" (ngSubmit)="onSubmit()">

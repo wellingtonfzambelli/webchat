@@ -13,6 +13,6 @@ import { Session } from '../../../shared/session';
 })
 
 export class ChatHeadComponent {
-  @Input() userAvatar! : SafeUrl;
+  @Input() userAvatar : SafeUrl | null = null;
   @Input() currentUser! : Session;
 }

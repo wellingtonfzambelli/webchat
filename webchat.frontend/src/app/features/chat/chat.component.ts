@@ -10,15 +10,17 @@ import { AvatarUser } from '../../shared/avatarUser';
 import { ChatMessage } from '../../shared/chatMessage';
 import { Session } from '../../shared/session';
 import { ChatHeadComponent } from "./chat-head/chat-head.component";
+import { ChatMessageComponent } from "./chat-message/chat-message.component";
 
 @Component({
   selector: 'app-chat',
   imports: [
     ReactiveFormsModule,
-    NgFor,
-    NgClass,
     ChatHeadComponent,
-    ChatHeadComponent
+    ChatHeadComponent,
+    ChatMessageComponent,
+    NgFor,
+    NgClass
 ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss'
@@ -69,10 +71,10 @@ export class ChatComponent implements OnInit {
     this.currentUser = new Session(
       this.sessionService.get()?.userId as string, 
       this.sessionService.get()?.userName as string, 
-      this.sessionService.get()?.avatarId as number);
+      this.sessionService.get()?.avatarId as number
+    );
 
     this.bindAvatarUsers(this.currentUser.userId, this.currentUser.avatarId);
-    
 
     this.signalrService.createHubConnection();
     this.signalrService.hubConnection?.on("ChatHub", (hubMessage: string) => {
@@ -103,7 +105,8 @@ export class ChatComponent implements OnInit {
     });
   }
 
-  public getAvatarByUserId(userId?: string): SafeUrl {
-    return this._userAvatars.filter(s => s.userId === userId)[0].userAvatar;
+  public getAvatarByUserId(userId?: string): SafeUrl | null{
+    const userAvatar = this._userAvatars.find(s => s.userId === userId);
+    return userAvatar ? userAvatar.userAvatar : null;
   }
 }
