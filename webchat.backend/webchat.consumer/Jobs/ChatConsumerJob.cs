@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using webchat.consumer.SignalR;
 using webchat.crosscutting.Domain;
 using webchat.crosscutting.Kafka;
 
@@ -38,9 +39,10 @@ internal class ChatConsumerJob : BackgroundService
 
                 _logger.LogInformation($"Getting message: {consumeResult.Message.Value}");
 
-                ChatMessage? user = JsonSerializer.Deserialize<ChatMessage>(consumeResult.Message.Value);
+                ChatMessage? chatMessage = JsonSerializer.Deserialize<ChatMessage>(consumeResult.Message.Value);
 
-                //await _hubContext.Clients.All.SendAsync("ReceiveMessage", user, stoppingToken);
+                var signalR = new ProducerSingalR();
+                await signalR.SendMessageAsync(chatMessage);
 
                 _kafkaConsumer.Commit(consumeResult);
             }

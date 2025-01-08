@@ -6,4 +6,5 @@ public sealed class ChatMessage
     public string UserName { get; set; }
     public int AvatarId { get; set; }
     public string Message { get; set; }
+    public DateTime SentAt { get; set; } = DateTime.Now;
 }

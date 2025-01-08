@@ -22,7 +22,7 @@ export class SessionStorageService {
 
     if (storedData) {
         const jsonData = JSON.parse(storedData);
-        return new Session(jsonData.userName, jsonData.avatarId);
+        return new Session(jsonData.userId, jsonData.userName, jsonData.avatarId);
     }
 
     return null;

@@ -1,7 +1,7 @@
 export class Session {
 
-    constructor(userName: string, avatarId: number){
-        this.userId = crypto.randomUUID();
+    constructor(userId: string, userName: string, avatarId: number){
+        this.userId = userId;
         this.userName = userName;
         this.avatarId = avatarId;    
     }

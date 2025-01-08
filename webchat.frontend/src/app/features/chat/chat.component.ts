@@ -1,4 +1,4 @@
-import { TitleCasePipe } from '@angular/common';
+import { DatePipe, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
@@ -12,7 +12,11 @@ import { ChatMessage } from '../../shared/chatMessage';
   selector: 'app-chat',
   imports: [
     TitleCasePipe,
-    ReactiveFormsModule
+    DatePipe,
+    ReactiveFormsModule,
+    NgFor,
+    NgIf,
+    NgClass
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss'
@@ -27,6 +31,7 @@ export class ChatComponent implements OnInit {
   public signalrService = inject(SignalrService);
   public sessionService = inject(SessionStorageService);
   public avatarUrl: SafeUrl | null = null;
+  public chatMessages: ChatMessage[] = [];
 
   public chatForm = this._formBuilder.group({
       message: new FormControl('', [Validators.required])      
@@ -41,7 +46,7 @@ export class ChatComponent implements OnInit {
         const chatMessage = new ChatMessage(
           this.sessionService.get()?.userId as string,
           this.sessionService.get()?.userName as string,
-          this.sessionService.get()?.avatarId as number,
+          this.sessionService.get()?.avatarId as number,          
           message
         )
 
@@ -59,7 +64,22 @@ export class ChatComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchAvatar(this.sessionService.get()?.avatarId as number);
+    
     this.signalrService.createHubConnection();
+    
+    this.signalrService.hubConnection?.on("ChatHub", (hubMessage: string) => {
+
+      const hubMessageJson = JSON.parse(hubMessage);
+
+      const chatMessage = new ChatMessage(
+        hubMessageJson.UserId, 
+        hubMessageJson.UserName,
+        hubMessageJson.AvatarId,
+        hubMessageJson.Message
+      );
+
+      this.chatMessages.push(chatMessage);
+    })
   }
 
   fetchAvatar(id: number) {

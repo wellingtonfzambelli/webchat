@@ -40,7 +40,7 @@ export class HomeComponent implements OnInit {
 
       const avatarId = this._avatarService.getRandomNumberByGender(gender);
       
-      const session = new Session(userName, avatarId);
+      const session = new Session(crypto.randomUUID(), userName, avatarId);
       this._sessionService.create(session);
 
       this._router.navigateByUrl('/chat');
