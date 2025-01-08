@@ -1,5 +1,5 @@
 <main class="content">
-    <div class="container p-0">
+	<div class="container p-0">
 
 		<h1 class="h3 mb-3">Messages</h1>
 		<a style="float: right;">LOGOUT</a>
@@ -10,17 +10,17 @@
 			<div class="row g-0">
 				<div class="col-12 col-lg-5 col-xl-3 border-right">
 
-          			<!-- SEARCH -->
+					<!-- SEARCH -->
 					<div class="px-4 d-none d-md-block">
 						<div class="d-flex align-items-center">
 							<div class="flex-grow-1" style="text-align: center; font-weight: bold;">
 								<!-- <input type="text" class="form-control my-3" placeholder="Search..."> -->
-                				<span >Users</span>
+								<span >Users</span>
 							</div>
 						</div>
 					</div>
 
-          			<!-- LIST OF USERS -->
+					<!-- LIST OF USERS -->
 					<a href="#" class="list-group-item list-group-item-action border-0">
 						<div class="badge bg-success float-right">5</div>
 						<div class="d-flex align-items-start">
@@ -38,33 +38,21 @@
 				<!-- CHAT -->
 				<div class="col-12 col-lg-7 col-xl-9">
 
-          			<!-- CHAT HEADER -->
-					<div class="py-2 px-4 border-bottom d-none d-lg-block">
-						<div class="d-flex align-items-center py-1">
-							
-              				<div class="position-relative">
-								<img [src]="myAvatarUrl" class="rounded-circle mr-1" alt="{{sessionService.get()?.userName}}" width="40" height="40">
-							</div>
+					<!-- CHAT HEADER -->
+					<app-chat-head [userAvatar]="getAvatarByUserId(currentUser.userId)" [currentUser]="currentUser"></app-chat-head>
 
-							<div class="flex-grow-1 pl-3">
-								<strong>{{sessionService.get()?.userName | titlecase}}</strong>
-								<div class="text-muted small"><em>Online</em></div>
-							</div>							
-						</div>
-					</div>
-
-          			<!-- MESSAGES -->
+					<!-- MESSAGES -->
 					<div class="position-relative">
 						<div class="chat-messages p-4">
 							<div *ngFor="let item of chatMessages">
 								<!-- MY MESSAGE -->
-								<div [ngClass]="item.userId == sessionService.get()?.userId ? 'chat-message-right pb-4' : 'chat-message-left pb-4'" >
+								<div [ngClass]="item.userId == currentUser.userId ? 'chat-message-right pb-4' : 'chat-message-left pb-4'" >
 									<div>
-										<img [src]="item.userId == sessionService.get()?.userId ? myAvatarUrl : 'https://bootdey.com/img/Content/avatar/avatar1.png'" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
+										<img [src]="item.userId == currentUser.userId ? getAvatarByUserId(currentUser.userId) : 'https://bootdey.com/img/Content/avatar/avatar1.png'" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
 										<div class="text-muted small text-nowrap mt-2">2:33 am</div>
 									</div>
 									<div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
-										<div class="font-weight-bold mb-1">{{item.userId == sessionService.get()?.userId ? 'You': item.userName}}</div>
+										<div class="font-weight-bold mb-1">{{item.userId == currentUser.userId ? 'You': item.userName}}</div>
 										{{item.message}}
 									</div>
 								</div>
