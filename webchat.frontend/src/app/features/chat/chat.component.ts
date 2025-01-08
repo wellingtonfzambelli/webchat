@@ -1,7 +1,7 @@
-import { NgClass, NgFor } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { AvatarService } from '../../core/services/avatar.service';
 import { ChatService } from '../../core/services/chat.service';
 import { SessionStorageService } from '../../core/services/session-storage.service';
@@ -18,22 +18,20 @@ import { ChatMessageComponent } from "./chat-message/chat-message.component";
     ReactiveFormsModule,
     ChatHeadComponent,
     ChatHeadComponent,
-    ChatMessageComponent,
-    NgFor,
-    NgClass
+    ChatMessageComponent
 ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss'
 })
 
 export class ChatComponent implements OnInit, OnDestroy {
-  
   private _avatarService = inject(AvatarService);
   private _chatService = inject(ChatService);
   private _sanitizer = inject(DomSanitizer);
   private _formBuilder = inject(FormBuilder);
   private _userAvatars: AvatarUser[] = [];
 
+  public route = inject(Router);
   public signalrService = inject(SignalrService);
   public sessionService = inject(SessionStorageService);
   public currentUser!: Session;
@@ -68,9 +66,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
-    this.signalrService.startConnection();
-    this.signalrService.listenMessages();
+    this.initializeSignalR();
     
     this.currentUser = new Session(
       this.sessionService.get()?.userId as string, 
@@ -98,6 +94,17 @@ export class ChatComponent implements OnInit, OnDestroy {
   public getAvatarByUserId(userId?: string): SafeUrl | null{
     const userAvatar = this._userAvatars.find(s => s.userId === userId);
     return userAvatar ? userAvatar.userAvatar : null;
+  }
+
+  public logout() : void {
+    this.sessionService.remove();
+    this.signalrService.stopHubConnection();
+  }
+
+  private initializeSignalR() : void {
+    this.signalrService.startConnection();
+    this.signalrService.listenMessages();
+    this.signalrService.listenForOnlineUsers();
   }
 
   ngOnDestroy(): void {

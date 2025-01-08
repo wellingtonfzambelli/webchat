@@ -58,15 +58,24 @@ export class SignalrService {
   }
 
   public startConnection(): void {
-    this._hubConnection
-      .start()
-      .then(() => console.log('Connection started'))
-      .catch(err => console.error('Error while starting connection:', err));
+    if (this._hubConnection.state === HubConnectionState.Disconnected) {
+      this._hubConnection
+        .start()
+        .then(() => console.log('Connection started'))
+        .catch(err => console.error('Error while starting connection:', err));
+    }
   }
 
   public stopHubConnection() {
-    if (this._hubConnection?.state === HubConnectionState.Connected) {
-      this._hubConnection.stop().catch(error => console.log(error))
+    if (this._hubConnection.state === HubConnectionState.Connected) {
+      this._hubConnection
+        .stop()
+        .then(() => console.log('Connection closed'))
+        .catch(error => console.log("Error while closing connection"));
     }
+  }
+
+  public getConnectionState(): HubConnectionState {
+    return this._hubConnection.state;
   }
 }

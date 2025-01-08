@@ -1,8 +1,8 @@
 <main class="content">
 	<div class="container p-0">
 
-		<h1 class="h3 mb-3">Messages</h1>
-		<a href="#" (click)="sessionService.logout()" style="float: right;">LOGOUT</a>
+		<h1 class="h3 mb-3">Webchat - SignalR</h1>
+		<a href="#" (click)="logout()" style="float: right;">LOGOUT</a>
 
 		<div style="clear: both;"></div>
 
@@ -15,7 +15,7 @@
 						<div class="d-flex align-items-center">
 							<div class="flex-grow-1" style="text-align: center; font-weight: bold;">
 								<!-- <input type="text" class="form-control my-3" placeholder="Search..."> -->
-								<span >Users</span>
+								<span >Online Users [{{signalrService.getOnlineUsers().length}}]</span>
 							</div>
 						</div>
 					</div>
@@ -39,7 +39,7 @@
 				<div class="col-12 col-lg-7 col-xl-9">
 
 					<!-- CHAT HEADER -->
-					<app-chat-head [userAvatar]="getAvatarByUserId(currentUser.userId)" [currentUser]="currentUser"></app-chat-head>
+					<app-chat-head [userAvatar]="getAvatarByUserId(currentUser.userId)" [currentUser]="currentUser" [connecitonState]="signalrService.getConnectionState()"></app-chat-head>
 
 					<!-- MESSAGES -->
 					<app-chat-message [currentUser]="currentUser" [chatMessages]="signalrService.getMessages()" [getAvatarByUserId]="getAvatarByUserId.bind(this)" ></app-chat-message>

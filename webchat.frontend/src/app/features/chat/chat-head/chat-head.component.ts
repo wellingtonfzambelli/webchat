@@ -1,6 +1,7 @@
 import { TitleCasePipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
+import { HubConnectionState } from '@microsoft/signalr';
 import { Session } from '../../../shared/session';
 
 @Component({
@@ -15,4 +16,5 @@ import { Session } from '../../../shared/session';
 export class ChatHeadComponent {
   @Input() userAvatar : SafeUrl | null = null;
   @Input() currentUser! : Session;
+  @Input() connecitonState! : HubConnectionState;
 }

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AvatarService } from '../../core/services/avatar.service';
@@ -14,7 +14,7 @@ import { Session } from '../../shared/session';
   styleUrl: './home.component.scss'
 })
 
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   private _sessionService = inject(SessionStorageService);
   private _avatarService = inject(AvatarService);
   private _formBuilder = inject(FormBuilder);
@@ -27,7 +27,7 @@ export class HomeComponent implements OnInit {
     gender: new FormControl('', [Validators.required]),
   });
 
-  public ngOnInit(): void {
+  constructor() {
     this._sessionService.remove();
   }
 

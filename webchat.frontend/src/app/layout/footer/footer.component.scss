@@ -1,0 +1,38 @@
+/* Footer */
+.footer {
+    border-top: 1px solid #e5e7eb; /* Border similar ao Tailwind */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Shadow */
+    padding: 1rem; /* Espaçamento interno */
+    width: 100%; /* Largura total */
+    max-height: 5rem; /* Altura máxima */
+    position: fixed; /* Fixo no rodapé */
+    bottom: 0;
+    z-index: 50;
+    background-color: #ffffff; /* Fundo branco */
+}
+
+/* Footer Container */
+.footer-container {
+    display: flex; /* Layout flex */
+    align-items: center; /* Alinhamento vertical */
+    justify-content: space-between; /* Espaçamento entre elementos */
+    max-width: 1536px; /* Largura máxima (2xl no Tailwind) */
+    margin: 0 auto; /* Centralizar */
+}
+
+/* Texto no Footer */
+.footer-text {
+    font-size: 0.875rem; /* Tamanho do texto (sm) */
+    color: #4b5563; /* Cor do texto (gray-600) */
+}
+
+/* Ícones */
+.footer-icons {
+    display: flex; /* Layout flex */
+    gap: 0.75rem; /* Espaçamento entre elementos (space-x-3) */
+}
+
+.footer-icon {
+    height: 2rem; /* Altura do ícone (h-8) */
+    width: 2rem; /* Largura do ícone (w-8) */
+}

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { Session } from '../../shared/session';
 
 @Injectable({
@@ -7,8 +6,6 @@ import { Session } from '../../shared/session';
 })
 
 export class SessionStorageService {
-  constructor(private router: Router) {}
-
   private _sessionNane : string = "webchame-session";
 
   public verifyExists() : boolean {
@@ -33,11 +30,6 @@ export class SessionStorageService {
 
   public create(value: Session) : void {
     sessionStorage.setItem(this._sessionNane, JSON.stringify(value));
-  }
-
-  public logout() : void {
-    this.remove();
-    this.router.navigate(['/']);
   }
 
   public remove() : void {
