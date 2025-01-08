@@ -1,5 +1,5 @@
 import { NgClass, NgFor } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { AvatarService } from '../../core/services/avatar.service';
@@ -26,7 +26,8 @@ import { ChatMessageComponent } from "./chat-message/chat-message.component";
   styleUrl: './chat.component.scss'
 })
 
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
+  
   private _avatarService = inject(AvatarService);
   private _chatService = inject(ChatService);
   private _sanitizer = inject(DomSanitizer);
@@ -35,7 +36,6 @@ export class ChatComponent implements OnInit {
 
   public signalrService = inject(SignalrService);
   public sessionService = inject(SessionStorageService);
-  public chatMessages: ChatMessage[] = [];  
   public currentUser!: Session;
 
   public chatForm = this._formBuilder.group({
@@ -45,29 +45,33 @@ export class ChatComponent implements OnInit {
 
 
   public onSubmit() {
-      if (!this.chatForm.invalid) {
-        const message = this.chatForm.get('message')?.value as string;  
-        
-        const chatMessage = new ChatMessage(
-          this.sessionService.get()?.userId as string,
-          this.sessionService.get()?.userName as string,
-          this.sessionService.get()?.avatarId as number,          
-          message
-        )
+    if (!this.chatForm.invalid) {
+      const message = this.chatForm.get('message')?.value as string;  
+      
+      const chatMessage = new ChatMessage(
+        this.sessionService.get()?.userId as string,
+        this.sessionService.get()?.userName as string,
+        this.sessionService.get()?.avatarId as number,          
+        message
+      )
 
-        this._chatService.sendMessage(chatMessage).subscribe({
-          next: () => {
-            this.chatForm.reset();
-            console.log('Message sent successfully!');
-          },
-          error: (err) => {
-            console.error('Failed to send message', err);
-          }
-        });
-      }
+      this._chatService.sendMessage(chatMessage).subscribe({
+        next: () => {
+          this.chatForm.reset();
+          console.log('Message sent successfully!');
+        },
+        error: (err) => {
+          console.error('Failed to send message', err);
+        }
+      });
     }
+  }
 
   ngOnInit(): void {
+
+    this.signalrService.startConnection();
+    this.signalrService.listenMessages();
+    
     this.currentUser = new Session(
       this.sessionService.get()?.userId as string, 
       this.sessionService.get()?.userName as string, 
@@ -75,20 +79,6 @@ export class ChatComponent implements OnInit {
     );
 
     this.bindAvatarUsers(this.currentUser.userId, this.currentUser.avatarId);
-
-    this.signalrService.createHubConnection();
-    this.signalrService.hubConnection?.on("ChatHub", (hubMessage: string) => {
-      const hubMessageJson = JSON.parse(hubMessage);
-
-      const chatMessage = new ChatMessage(
-        hubMessageJson.UserId, 
-        hubMessageJson.UserName,
-        hubMessageJson.AvatarId,
-        hubMessageJson.Message
-      );
-
-      this.chatMessages.push(chatMessage);
-    })
   }
 
   public bindAvatarUsers(userId: string, avatarId: number) {
@@ -108,5 +98,9 @@ export class ChatComponent implements OnInit {
   public getAvatarByUserId(userId?: string): SafeUrl | null{
     const userAvatar = this._userAvatars.find(s => s.userId === userId);
     return userAvatar ? userAvatar.userAvatar : null;
+  }
+
+  ngOnDestroy(): void {
+    this.signalrService.startConnection();
   }
 }

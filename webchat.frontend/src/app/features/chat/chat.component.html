@@ -42,7 +42,7 @@
 					<app-chat-head [userAvatar]="getAvatarByUserId(currentUser.userId)" [currentUser]="currentUser"></app-chat-head>
 
 					<!-- MESSAGES -->
-					<app-chat-message [currentUser]="currentUser" [chatMessages]="chatMessages" [getAvatarByUserId]="getAvatarByUserId.bind(this)" ></app-chat-message>
+					<app-chat-message [currentUser]="currentUser" [chatMessages]="signalrService.getMessages()" [getAvatarByUserId]="getAvatarByUserId.bind(this)" ></app-chat-message>
 					
 					<!-- INPUT & SEND -->
 					<div class="flex-grow-0 py-3 px-4 border-top">
