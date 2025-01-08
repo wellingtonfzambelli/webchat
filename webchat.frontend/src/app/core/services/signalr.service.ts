@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HubConnection, HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr';
 import { environment } from '../../../environments/environment';
 import { ChatMessage } from '../../shared/chatMessage';
+import { Session } from '../../shared/session';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,14 @@ import { ChatMessage } from '../../shared/chatMessage';
 export class SignalrService {
 
   private _hubUrl = environment.signalHubUrl;
-  private _hubConnection: HubConnection;
+  private _hubConnection!: HubConnection;
   
-  private _onlineUsers: string[] = [];
+  private _onlineUsers: Session[] = [];
   private _messages: ChatMessage[] = [];
 
-  constructor(){
+  public buildConnection(userId: string, userName: string, avatarId: number) : void {
     this._hubConnection = new HubConnectionBuilder()
-    .withUrl(this._hubUrl, {
+    .withUrl(`${this._hubUrl}?userId=${userId}&avatarId=${avatarId}&userName=${userName}`, {
       withCredentials: true // includes credentials (cookies or authentication)
     })
     .withAutomaticReconnect()
@@ -28,13 +29,24 @@ export class SignalrService {
     return this._messages;
   }
 
-  public getOnlineUsers() : string[] {
+  public getOnlineUsers() : Session[] {
     return this._onlineUsers;
   }
 
   public listenForOnlineUsers(): void {
     this._hubConnection.on('UpdateOnlineUsers', (users: string[]) => {
-      this._onlineUsers = users;
+
+      this._onlineUsers = users.map(userJson => {        
+        const userObject = JSON.parse(userJson);
+
+        return new Session(
+          userObject.UserId[0],
+          userObject.UserName[0],
+          userObject.AvatarId[0]
+        );
+      });
+      
+      console.log(JSON.stringify(this._onlineUsers))
     });
   }
 

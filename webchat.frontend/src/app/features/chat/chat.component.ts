@@ -1,3 +1,4 @@
+import { NgFor, NgIf, TitleCasePipe } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
@@ -18,7 +19,10 @@ import { ChatMessageComponent } from "./chat-message/chat-message.component";
     ReactiveFormsModule,
     ChatHeadComponent,
     ChatHeadComponent,
-    ChatMessageComponent
+    ChatMessageComponent,
+    NgFor,
+    NgIf,
+    TitleCasePipe
 ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss'
@@ -102,6 +106,11 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   private initializeSignalR() : void {
+    this.signalrService.buildConnection(
+      this.sessionService.get()!.userId,
+      this.sessionService.get()!.userName,
+      this.sessionService.get()!.avatarId
+    )
     this.signalrService.startConnection();
     this.signalrService.listenMessages();
     this.signalrService.listenForOnlineUsers();
