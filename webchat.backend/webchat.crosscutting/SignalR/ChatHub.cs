@@ -7,7 +7,7 @@ namespace webchat.crosscutting.SignalR;
 
 public sealed class ChatHub : Hub
 {
-    private static readonly HashSet<string> OnlineUsers = new();
+    private static readonly HashSet<string> OnlineUsers = new HashSet<string>();
 
     public override Task OnConnectedAsync()
     {
@@ -27,12 +27,16 @@ public sealed class ChatHub : Hub
 
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        // Remove disconnected user
-        var userId = Context.User?.Identity?.Name ?? Context.ConnectionId;
-        OnlineUsers.Remove(userId);
+        if (Context.Features?.Get<IHttpContextFeature>()?.HttpContext
+           is var httpContext && httpContext is not null)
+        {
+            var userId = httpContext.Request.Query["userId"];
 
-        // Update to all connected clients
-        Clients.All.SendAsync("UpdateOnlineUsers", OnlineUsers);
+            RemoveUserById(userId);
+
+            // Update to all connected clients
+            Clients.All.SendAsync("UpdateOnlineUsers", OnlineUsers);
+        }
 
         return base.OnDisconnectedAsync(exception);
     }
@@ -56,5 +60,21 @@ public sealed class ChatHub : Hub
         };
 
         return JsonSerializer.Serialize(userInfo);
+    }
+
+    private void RemoveUserById(string userId)
+    {        
+        var userToRemove = string.Empty;
+        foreach (var userJson in OnlineUsers)
+        {
+            if (userJson.Contains($"\"UserId\":[\"{userId}\"]"))
+            {
+                userToRemove = userJson;
+                break;
+            }
+        }
+        
+        if (!string.IsNullOrEmpty(userToRemove))
+            OnlineUsers.Remove(userToRemove);
     }
 }
