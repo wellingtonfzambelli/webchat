@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    baseUrlChatApi: 'https://localhost:5001/chat',
-    signalHubUrl: "https://localhost:5001/hub/chat"
+    baseUrlChatApi: 'https://poc-webchat-frb2cqhububchadq.brazilsouth-01.azurewebsites.net/chat',
+    signalHubUrl: "https://poc-webchat-frb2cqhububchadq.brazilsouth-01.azurewebsites.net/hub/chat"
 };
