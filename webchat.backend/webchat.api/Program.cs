@@ -4,6 +4,7 @@ using webchat.crosscutting.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -52,6 +53,12 @@ app.MapPost("/chat", async (ChatMessage request, IChatKafka userKafka, Cancellat
     }
 })
 .WithOpenApi();
+
+// Enable Static frontend app
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.MapFallbackToController("Index", "Fallback");
+
 
 // CORS
 app.UseCors("OriginsPolicy");

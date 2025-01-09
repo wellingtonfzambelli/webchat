@@ -40,7 +40,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
 
   public onSubmit() {
-    
     if (!this.chatForm.invalid) {
       const message = this.chatForm.get('message')?.value as string;  
       
