@@ -4,14 +4,14 @@ using webchat.crosscutting.Domain;
 
 namespace webchat.consumer.SignalR;
 
-internal sealed class ProducerSingalR
+internal sealed class ProducerSingalR : IProducerSingalR
 {
     private readonly HubConnection _hubConnection;
 
-    public ProducerSingalR()
+    public ProducerSingalR(string hubAddress)
     {
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("http://localhost:5000/hub/chat")
+            .WithUrl(hubAddress)
             .Build();
     }
 

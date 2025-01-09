@@ -1,4 +1,4 @@
-import { NgFor, NgIf } from '@angular/common';
+import { NgFor, NgIf, TitleCasePipe } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -16,6 +16,7 @@ import { ChatMessageComponent } from "./chat-message/chat-message.component";
     ReactiveFormsModule,
     ChatHeadComponent,
     ChatMessageComponent,
+    TitleCasePipe,
     NgFor,
     NgIf
   ],
@@ -39,6 +40,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
 
   public onSubmit() {
+    
     if (!this.chatForm.invalid) {
       const message = this.chatForm.get('message')?.value as string;  
       

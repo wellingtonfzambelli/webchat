@@ -11,13 +11,13 @@ namespace webchat.consumer.Jobs;
 internal class ChatConsumerJob : BackgroundService
 {
     private readonly IConsumer<Ignore, string>? _kafkaConsumer;
-    //private readonly IHubContext<ChatHub> _hubContext;
     private readonly ILogger<ChatConsumerJob> _logger;
+    private readonly IProducerSingalR _producerSignalR;
 
-    public ChatConsumerJob(IChatKafka userKafka/*, IHubContext<ChatHub> hubContext*/, ILogger<ChatConsumerJob> logger)
+    public ChatConsumerJob(IChatKafka userKafka, IProducerSingalR producerSignalR, ILogger<ChatConsumerJob> logger)
         : this(userKafka)
-    {
-        // _hubContext = hubContext;
+    { 
+        _producerSignalR = producerSignalR;
         _logger = logger;
     }
 
@@ -39,10 +39,9 @@ internal class ChatConsumerJob : BackgroundService
 
                 _logger.LogInformation($"Getting message: {consumeResult.Message.Value}");
 
-                ChatMessage? chatMessage = JsonSerializer.Deserialize<ChatMessage>(consumeResult.Message.Value);
-
-                var signalR = new ProducerSingalR();
-                await signalR.SendMessageAsync(chatMessage);
+                ChatMessage chatMessage = JsonSerializer.Deserialize<ChatMessage>(consumeResult.Message.Value)!;
+                
+                await _producerSignalR.SendMessageAsync(chatMessage);
 
                 _kafkaConsumer.Commit(consumeResult);
             }

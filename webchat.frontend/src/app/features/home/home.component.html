@@ -4,7 +4,7 @@
     <form  [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
             <label for="username" style="font-weight: bold;">USER NAME</label>
-            <input formControlName="userName" type="text" id="userName" name="userName" placeholder="Enter your username">
+            <input formControlName="userName" type="text" id="userName" name="userName" maxlength="30" placeholder="Enter your username">
            
             @if (submitted && loginForm.get('userName')?.hasError('required')) {
                 <span style="color:red">Username is required</span>
