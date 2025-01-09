@@ -1,13 +1,13 @@
 <main class="content">
 	<div class="container p-0">
-
-		<h1 class="h3 mb-3">Webchat - SignalR</h1>
-		<a href="#" (click)="logout()" style="float: right;">LOGOUT</a>
+		
+		<a href="#" (click)="logout()" style="float: right; font-weight: bold; color:firebrick; margin-bottom: 20px;">LOGOUT</a>
 
 		<div style="clear: both;"></div>
 
 		<div class="card">
 			<div class="row g-0">
+				<!-- LEFT BAR USERS -->
 				<div class="col-12 col-lg-5 col-xl-3 border-right">
 
 					<!-- SEARCH -->
@@ -15,7 +15,7 @@
 						<div class="d-flex align-items-center">
 							<div class="flex-grow-1" style="text-align: center; font-weight: bold;">
 								<!-- <input type="text" class="form-control my-3" placeholder="Search..."> -->
-								<span style="color: forestgreen">Online Users [{{signalrService.getOnlineUsers().length - 1}}]</span>
+								<span style="color: forestgreen">Online Users [{{signalrService.countOnlineUsers()}}]</span>
 							</div>
 						</div>
 					</div>
@@ -24,9 +24,9 @@
 					 <div *ngFor="let item of signalrService.getOnlineUsers()">
 						<div *ngIf="item.userId !== currentUser.userId" class="list-group-item list-group-item-action border-0">
 							<div class="d-flex align-items-start">
-								<img src="https://bootdey.com/img/Content/avatar/avatar5.png" class="rounded-circle mr-1" alt="Vanessa Tucker" width="40" height="40">
+								<img src={{getAvatarImagePathByAvatarId(item.avatarId)}} class="rounded-circle mr-1" alt="Vanessa Tucker" width="40" height="40">
 								<div class="flex-grow-1 ml-3">
-									{{item.userName | titlecase }}
+									{{item.userName }}
 									<div class="small"><span class="fas fa-circle chat-online"></span> Online</div>
 								</div>
 							</div>
@@ -40,10 +40,10 @@
 				<div class="col-12 col-lg-7 col-xl-9">
 
 					<!-- CHAT HEADER -->
-					<app-chat-head [userAvatar]="getAvatarByUserId(currentUser.userId)" [currentUser]="currentUser" [connecitonState]="signalrService.getConnectionState()"></app-chat-head>
+					<app-chat-head [userAvatar]="getAvatarImagePathByAvatarId(currentUser.avatarId)" [currentUser]="currentUser" [connecitonState]="signalrService.getConnectionState()"></app-chat-head>
 
 					<!-- MESSAGES -->
-					<app-chat-message [currentUser]="currentUser" [chatMessages]="signalrService.getMessages()" [getAvatarByUserId]="getAvatarByUserId.bind(this)" ></app-chat-message>
+					<app-chat-message [currentUser]="currentUser" [receivedAt]="getCurrentDate()" [chatMessages]="signalrService.getMessages()" [getAvatarImagePathByAvatarId]="getAvatarImagePathByAvatarId.bind(this)" ></app-chat-message>
 					
 					<!-- INPUT & SEND -->
 					<div class="flex-grow-0 py-3 px-4 border-top">

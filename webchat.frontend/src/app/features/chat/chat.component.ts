@@ -1,13 +1,10 @@
-import { NgFor, NgIf, TitleCasePipe } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { AvatarService } from '../../core/services/avatar.service';
 import { ChatService } from '../../core/services/chat.service';
 import { SessionStorageService } from '../../core/services/session-storage.service';
 import { SignalrService } from '../../core/services/signalr.service';
-import { AvatarUser } from '../../shared/avatarUser';
 import { ChatMessage } from '../../shared/chatMessage';
 import { Session } from '../../shared/session';
 import { ChatHeadComponent } from "./chat-head/chat-head.component";
@@ -18,22 +15,17 @@ import { ChatMessageComponent } from "./chat-message/chat-message.component";
   imports: [
     ReactiveFormsModule,
     ChatHeadComponent,
-    ChatHeadComponent,
     ChatMessageComponent,
     NgFor,
-    NgIf,
-    TitleCasePipe
-],
+    NgIf
+  ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss'
 })
 
-export class ChatComponent implements OnInit, OnDestroy {
-  private _avatarService = inject(AvatarService);
+export class ChatComponent implements OnInit, OnDestroy {  
   private _chatService = inject(ChatService);
-  private _sanitizer = inject(DomSanitizer);
   private _formBuilder = inject(FormBuilder);
-  private _userAvatars: AvatarUser[] = [];
 
   public route = inject(Router);
   public signalrService = inject(SignalrService);
@@ -77,28 +69,11 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.sessionService.get()?.userName as string, 
       this.sessionService.get()?.avatarId as number
     );
-
-    this.bindAvatarUsers(this.currentUser.userId, this.currentUser.avatarId);
   }
 
-  public bindAvatarUsers(userId: string, avatarId: number) {
-    this._avatarService.getAvatarById(avatarId).subscribe({
-      next: (blob: Blob) => {
-        const objectUrl = URL.createObjectURL(blob);
-        const trustUrl = this._sanitizer.bypassSecurityTrustUrl(objectUrl);
-
-        this._userAvatars = [...this._userAvatars, new AvatarUser(userId, trustUrl)];
-      },
-      error: (err) => {
-        console.error('Error fetching avatar:', err);
-      },
-    });
-  }
-
-  public getAvatarByUserId(userId?: string): SafeUrl | null{
-    const userAvatar = this._userAvatars.find(s => s.userId === userId);
-    return userAvatar ? userAvatar.userAvatar : null;
-  }
+  public getAvatarImagePathByAvatarId(avatarId: number) : string {
+    return `./images/avatars/AV${avatarId}.png`;
+  }  
 
   public logout() : void {
     this.sessionService.remove();
@@ -118,5 +93,24 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.signalrService.startConnection();
+  }
+
+  getCurrentDate(): string {
+    const now = new Date();
+    
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const day = now.getDate();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+    
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    
+    const hour12 = hours % 12 || 12; 
+  
+    const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+  
+    // return `${day}/${month}/${year} ${hour12}:${formattedMinutes} ${ampm}`;
+    return `${hour12}:${formattedMinutes} ${ampm}`;
   }
 }

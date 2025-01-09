@@ -4,8 +4,8 @@
         <div *ngFor="let item of chatMessages">
             <div [ngClass]="item.userId === currentUser.userId ? 'chat-message-right pb-4' : 'chat-message-left pb-4'" >
                 <div>
-                    <img [src]="item.userId == currentUser.userId ? getAvatarByUserId(currentUser.userId) : 'https://bootdey.com/img/Content/avatar/avatar1.png'" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
-                    <div class="text-muted small text-nowrap mt-2">2:33 am</div>
+                    <img [src]="item.userId == currentUser.userId ? getAvatarImagePathByAvatarId(currentUser.avatarId) : getAvatarImagePathByAvatarId(item.avatarId)" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
+                    <div class="text-muted small text-nowrap mt-2">{{receivedAt}}</div>
                 </div>
 
                 <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">

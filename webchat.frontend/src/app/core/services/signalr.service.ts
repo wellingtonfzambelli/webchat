@@ -33,6 +33,11 @@ export class SignalrService {
     return this._onlineUsers;
   }
 
+  public countOnlineUsers() : number {
+    const count = this._onlineUsers.length - 1;
+    return count >= 0 ? count : 0;
+  }
+
   public listenForOnlineUsers(): void {
     this._hubConnection.on('UpdateOnlineUsers', (users: string[]) => {
 

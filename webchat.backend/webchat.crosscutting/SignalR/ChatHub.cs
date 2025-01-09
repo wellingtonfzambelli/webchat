@@ -7,7 +7,7 @@ namespace webchat.crosscutting.SignalR;
 
 public sealed class ChatHub : Hub
 {
-    private static readonly HashSet<string> OnlineUsers = new HashSet<string>();
+    private static readonly HashSet<string> OnlineUsers = new();
 
     public override Task OnConnectedAsync()
     {
@@ -16,10 +16,13 @@ public sealed class ChatHub : Hub
         {
             string json = ConvertJson(httpContext);
 
-            OnlineUsers.Add(json);
+            if (json is not null)
+            {
+                OnlineUsers.Add(json);
 
-            // Update to all connected clients
-            Clients.All.SendAsync("UpdateOnlineUsers", OnlineUsers);
+                // Update to all connected clients
+                Clients.All.SendAsync("UpdateOnlineUsers", OnlineUsers);
+            }
         }
         
         return base.OnConnectedAsync();
@@ -51,6 +54,9 @@ public sealed class ChatHub : Hub
         var userName = httpContext.Request.Query["userName"];
         var userId = httpContext.Request.Query["userId"];
         var avatarId = httpContext.Request.Query["avatarId"];
+
+        if (string.IsNullOrEmpty(userId))
+            return null;
 
         var userInfo = new
         {
