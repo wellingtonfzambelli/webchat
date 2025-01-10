@@ -8,7 +8,7 @@ using webchat.crosscutting.Kafka;
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddHostedService<ChatConsumerJob>();
-builder.Services.AddTransient<IProducerSingalR>(s => 
+builder.Services.AddTransient<IProducerSingalR>(s =>
     new ProducerSingalR(builder.Configuration["AddressHubConnection"] ?? throw new Exception())
 );
 

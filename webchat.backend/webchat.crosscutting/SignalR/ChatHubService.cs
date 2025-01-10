@@ -2,16 +2,21 @@
 using Microsoft.AspNetCore.Http.Connections.Features;
 using Microsoft.AspNetCore.SignalR;
 using System.Text.Json;
+using webchat.crosscutting.Domain;
 
 namespace webchat.crosscutting.SignalR;
 
-public sealed class ChatHub : Hub
+public sealed class ChatHubService : Hub, IChatHubService
 {
     private static readonly HashSet<string> OnlineUsers = new();
+    private readonly IHubContext<ChatHubService> _hubContext;
+
+    public ChatHubService(IHubContext<ChatHubService> hubContext) =>
+        _hubContext = hubContext;
 
     public override Task OnConnectedAsync()
     {
-        if(Context.Features?.Get<IHttpContextFeature>()?.HttpContext 
+        if (Context.Features?.Get<IHttpContextFeature>()?.HttpContext
             is var httpContext && httpContext is not null)
         {
             string json = ConvertJson(httpContext);
@@ -24,7 +29,7 @@ public sealed class ChatHub : Hub
                 Clients.All.SendAsync("UpdateOnlineUsers", OnlineUsers);
             }
         }
-        
+
         return base.OnConnectedAsync();
     }
 
@@ -44,10 +49,8 @@ public sealed class ChatHub : Hub
         return base.OnDisconnectedAsync(exception);
     }
 
-    public async Task SendMessage(string order)
-    {
-        await Clients.All.SendAsync("ChatHub", order);
-    }
+    public async Task SendMessageAsync(ChatMessage chatMessage) =>
+        await _hubContext.Clients.All.SendAsync("ChatHub", JsonSerializer.Serialize(chatMessage));
 
     private string ConvertJson(HttpContext httpContext)
     {
@@ -69,7 +72,7 @@ public sealed class ChatHub : Hub
     }
 
     private void RemoveUserById(string userId)
-    {        
+    {
         var userToRemove = string.Empty;
         foreach (var userJson in OnlineUsers)
         {
@@ -79,7 +82,7 @@ public sealed class ChatHub : Hub
                 break;
             }
         }
-        
+
         if (!string.IsNullOrEmpty(userToRemove))
             OnlineUsers.Remove(userToRemove);
     }

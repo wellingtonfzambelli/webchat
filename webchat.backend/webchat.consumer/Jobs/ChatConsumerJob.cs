@@ -16,7 +16,7 @@ internal class ChatConsumerJob : BackgroundService
 
     public ChatConsumerJob(IChatKafka userKafka, IProducerSingalR producerSignalR, ILogger<ChatConsumerJob> logger)
         : this(userKafka)
-    { 
+    {
         _producerSignalR = producerSignalR;
         _logger = logger;
     }
@@ -40,7 +40,7 @@ internal class ChatConsumerJob : BackgroundService
                 _logger.LogInformation($"Getting message: {consumeResult.Message.Value}");
 
                 ChatMessage chatMessage = JsonSerializer.Deserialize<ChatMessage>(consumeResult.Message.Value)!;
-                
+
                 await _producerSignalR.SendMessageAsync(chatMessage);
 
                 _kafkaConsumer.Commit(consumeResult);

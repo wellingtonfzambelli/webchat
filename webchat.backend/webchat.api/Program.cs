@@ -1,4 +1,3 @@
-using webchat.crosscutting.Domain;
 using webchat.crosscutting.Kafka;
 using webchat.crosscutting.SignalR;
 
@@ -8,6 +7,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSingleton<IChatHubService, ChatHubService>();
 builder.Services.AddTransient<IChatKafka>(p =>
     new ChatKafka(
         builder.Configuration["kafkaConfig:TopicName"],
@@ -40,20 +40,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapPost("/chat", async (ChatMessage request, IChatKafka userKafka, CancellationToken cancellationToken) =>
-{
-    try
-    {
-        await userKafka.ProduceAsync(request, cancellationToken);
-        return Results.NoContent();
-    }
-    catch (Exception ex)
-    {
-        return Results.BadRequest($"Error by producing the user: {ex.Message}");
-    }
-})
-.WithOpenApi();
-
 // Enable Static frontend app
 app.UseDefaultFiles();
 app.UseStaticFiles();
@@ -64,6 +50,6 @@ app.MapFallbackToController("Index", "Fallback");
 app.UseCors("OriginsPolicy");
 
 // SignalR
-app.MapHub<ChatHub>("/hub/chat");
+app.MapHub<ChatHubService>("/hub/chat");
 
 app.Run();
