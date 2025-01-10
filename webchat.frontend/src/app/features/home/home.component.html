@@ -1,25 +1,33 @@
-<div class="login-container" style="width:800px; margin:0 auto; margin-top:10%;">
+<div style="width: 100%; text-align: center; margin-top:2%;"> 
+    <img src="./favicon.ico" width="100px">
+</div>
+
+<div class="login-container">
     <h1>Login</h1>
-    
-    <form  [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
             <label for="username" style="font-weight: bold;">USER NAME</label>
-            <input formControlName="userName" type="text" id="userName" name="userName" maxlength="30" placeholder="Enter your username">
-           
+            <input
+                formControlName="userName"
+                type="text"
+                id="userName"
+                name="userName"
+                maxlength="30"
+                placeholder="Enter your username"
+            />
             @if (submitted && loginForm.get('userName')?.hasError('required')) {
-                <span style="color:red">Username is required</span>
+                <span class="error-message">Username is required</span>
             }
         </div>
 
         <div class="form-group">
             <label style="font-weight: bold;">GENDER</label>
-            <div class="gender-group" style="text-align: left;">
-                <label><input type="radio" formControlName="gender" name="gender" value="male"> Male</label>
-                <label><input type="radio" formControlName="gender" name="gender" value="female"> Female</label>
+            <div class="gender-group">
+                <label><input type="radio" formControlName="gender" name="gender" value="male" /> Male</label>
+                <label><input type="radio" formControlName="gender" name="gender" value="female" /> Female</label>
             </div>
-
             @if (submitted && loginForm.get('gender')?.hasError('required')) {
-                <span style="color:red">Gender is required</span>
+                <span class="error-message">Gender is required</span>
             }
         </div>
 
