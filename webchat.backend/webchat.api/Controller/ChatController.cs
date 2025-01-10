@@ -8,9 +8,9 @@ namespace webchat.api.Controller;
 public sealed class ChatController : ControllerBase
 {
     private readonly IChatKafka _userKafka;
-    private readonly ChatHubService _chatHubService;
+    private readonly IChatHubService _chatHubService;
 
-    public ChatController(IChatKafka userKafka, ChatHubService chatHubService)
+    public ChatController(IChatKafka userKafka, IChatHubService chatHubService)
     {
         _userKafka = userKafka;
         _chatHubService = chatHubService;
