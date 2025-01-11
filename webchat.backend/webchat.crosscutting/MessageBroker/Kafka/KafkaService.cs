@@ -1,26 +1,22 @@
 ﻿using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
-using webchat.crosscutting.Domain;
 
-namespace webchat.crosscutting.Kafka;
+namespace webchat.crosscutting.MessageBroker.Kafka;
 
-public sealed class ChatKafka : IChatKafka
+public sealed class KafkaService : IKafkaService
 {
     private readonly ProducerConfig _producerConfig;
-
     private readonly ConsumerConfig _consumerConfig;
     private readonly IConsumer<Ignore, string> _consumer;
-
     private readonly string _topicName;
-    private readonly ILogger<ChatKafka> _logger;
+    private readonly ILogger<KafkaService> _logger;
 
-    public ChatKafka
+    public KafkaService
     (
         string topicName,
         string bootstrapServers,
         string groupId,
-        ILogger<ChatKafka> logger
+        ILogger<KafkaService> logger
     )
     {
         _topicName = topicName;
@@ -43,7 +39,7 @@ public sealed class ChatKafka : IChatKafka
         _logger = logger;
     }
 
-    public async Task ProduceAsync(ChatMessage chatMessage, CancellationToken cancellationToken)
+    public async Task ProduceAsync(string message, CancellationToken ct)
     {
         using var producer = new ProducerBuilder<Null, string>(_producerConfig).Build();
 
@@ -54,9 +50,9 @@ public sealed class ChatKafka : IChatKafka
                     topic: _topicName,
                     new Message<Null, string>
                     {
-                        Value = JsonSerializer.Serialize(chatMessage)
+                        Value = message
                     },
-                    cancellationToken
+                    ct
                 );
 
             _logger.LogInformation($"Delivered message to {deliveryResult.Value}, Offset: {deliveryResult.Offset}");
@@ -66,7 +62,7 @@ public sealed class ChatKafka : IChatKafka
             _logger.LogError($"Delivery failed: {e.Error.Reason}");
         }
 
-        producer.Flush(cancellationToken);
+        producer.Flush(ct);
     }
 
     public IConsumer<Ignore, string> GetConsumer() =>

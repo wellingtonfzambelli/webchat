@@ -1,19 +1,34 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using System.Text.Json;
 using webchat.crosscutting.Domain;
-using webchat.crosscutting.Kafka;
+using webchat.crosscutting.MessageBroker.Kafka;
+using webchat.crosscutting.MessageBroker.RabbitMQ;
+using webchat.crosscutting.Settings;
 using webchat.crosscutting.SignalR;
 
 namespace webchat.api.Controller;
 
 public sealed class ChatController : ControllerBase
 {
-    private readonly IChatKafka _userKafka;
+    private readonly IKafkaService _kafkaService;
+    private readonly IRabbitMQService _rabbitMQService;
     private readonly IChatHubService _chatHubService;
+    private readonly CommunicationType _communicationType;
 
-    public ChatController(IChatKafka userKafka, IChatHubService chatHubService)
+
+    public ChatController
+    (
+        IKafkaService kafkaService,
+        IRabbitMQService rabbitMQService,
+        IChatHubService chatHubService,
+        IOptions<CommunicationTypeSettings> communicationTypeSettings
+    )
     {
-        _userKafka = userKafka;
+        _kafkaService = kafkaService;
         _chatHubService = chatHubService;
+        _communicationType = communicationTypeSettings.Value.Type;
+
     }
 
     [HttpPost]
@@ -26,21 +41,21 @@ public sealed class ChatController : ControllerBase
     {
         try
         {
-            var type = CommunicationType.Directly;
+            string message = JsonSerializer.Serialize(request);
 
-            switch (type)
+            switch (_communicationType)
             {
                 case CommunicationType.Kafka:
-                    await _userKafka.ProduceAsync(request, cancellationToken);
+                    await _kafkaService.ProduceAsync(message, cancellationToken);
                     break;
                 case CommunicationType.RabbitMQ:
-                    await _chatHubService.SendMessageAsync(request);
+                    await _rabbitMQService.ProduceAsync(message, cancellationToken);
                     break;
                 case CommunicationType.Directly:
                     await _chatHubService.SendMessageAsync(request);
                     break;
                 default:
-                    return BadRequest($"Unsupported communication type: {type}");
+                    return BadRequest($"Unsupported communication type: {_communicationType}");
             }
 
             return NoContent();

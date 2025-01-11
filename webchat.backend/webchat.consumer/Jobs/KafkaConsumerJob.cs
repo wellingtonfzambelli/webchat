@@ -4,24 +4,29 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using webchat.consumer.SignalR;
 using webchat.crosscutting.Domain;
-using webchat.crosscutting.Kafka;
+using webchat.crosscutting.MessageBroker.Kafka;
 
 namespace webchat.consumer.Jobs;
 
-internal class ChatConsumerJob : BackgroundService
+internal sealed class KafkaConsumerJob : BackgroundService
 {
-    private readonly IConsumer<Ignore, string>? _kafkaConsumer;
-    private readonly ILogger<ChatConsumerJob> _logger;
+    private readonly IConsumer<Ignore, string> _kafkaConsumer;
+    private readonly ILogger<KafkaConsumerJob> _logger;
     private readonly IProducerSingalR _producerSignalR;
 
-    public ChatConsumerJob(IChatKafka userKafka, IProducerSingalR producerSignalR, ILogger<ChatConsumerJob> logger)
+    public KafkaConsumerJob
+    (
+        IKafkaService userKafka,
+        IProducerSingalR producerSignalR,
+        ILogger<KafkaConsumerJob> logger
+    )
         : this(userKafka)
     {
         _producerSignalR = producerSignalR;
         _logger = logger;
     }
 
-    private ChatConsumerJob(IChatKafka userKafka)
+    private KafkaConsumerJob(IKafkaService userKafka)
     {
         _kafkaConsumer = userKafka.GetConsumer();
         _kafkaConsumer.Subscribe(userKafka.GetTopicName());
@@ -29,6 +34,8 @@ internal class ChatConsumerJob : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _logger.LogInformation("KafkaConsumerJob has started");
+
         while (!stoppingToken.IsCancellationRequested)
         {
             try
@@ -47,14 +54,14 @@ internal class ChatConsumerJob : BackgroundService
             }
             catch (OperationCanceledException ex)
             {
-                _logger.LogError($"UserConsumerJob error: {ex.Message}");
+                _logger.LogError($"KafkaConsumerJob error: {ex.Message}");
             }
         }
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Application has finished");
+        _logger.LogInformation("KafkaConsumerJob has finished");
 
         if (_kafkaConsumer is not null)
         {

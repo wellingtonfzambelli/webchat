@@ -1,4 +1,6 @@
-using webchat.crosscutting.Kafka;
+using webchat.crosscutting.MessageBroker.Kafka;
+using webchat.crosscutting.MessageBroker.RabbitMQ;
+using webchat.crosscutting.Settings;
 using webchat.crosscutting.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,15 +9,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddTransient<IRabbitMQService, RabbitMQService>();
 builder.Services.AddSingleton<IChatHubService, ChatHubService>();
-builder.Services.AddTransient<IChatKafka>(p =>
-    new ChatKafka(
+builder.Services.AddTransient<IKafkaService>(p =>
+    new KafkaService(
         builder.Configuration["kafkaConfig:TopicName"],
         builder.Configuration["kafkaConfig:BootstrapServer"],
         builder.Configuration["kafkaConfig:GroupId"],
-        p.GetService<ILogger<ChatKafka>>()
+        p.GetService<ILogger<KafkaService>>()
     )
 );
+
+builder.Services.Configure<CommunicationTypeSettings>(
+    builder.Configuration.GetSection("CommunicationTypeSettings"));
 
 // CORS
 builder.Services.AddCors(options =>
