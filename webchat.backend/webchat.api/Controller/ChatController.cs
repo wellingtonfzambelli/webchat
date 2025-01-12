@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using System.Text.Json;
 using webchat.crosscutting.Domain;
 using webchat.crosscutting.MessageBroker.Kafka;
@@ -22,12 +21,12 @@ public sealed class ChatController : ControllerBase
         IKafkaService kafkaService,
         IRabbitMQService rabbitMQService,
         IChatHubService chatHubService,
-        IOptions<CommunicationTypeSettings> communicationTypeSettings
+        CommunicationTypeSettings communicationTypeSettings
     )
     {
         _kafkaService = kafkaService;
         _chatHubService = chatHubService;
-        _communicationType = communicationTypeSettings.Value.Type;
+        _communicationType = communicationTypeSettings.Type;
 
     }
 

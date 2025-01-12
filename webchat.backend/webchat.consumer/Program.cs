@@ -11,14 +11,16 @@ using webchat.crosscutting.Settings;
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
-const string COMMUNICATION_TYPE_SETTINGS_NAME = "CommunicationTypeSettings";
-builder.Services.Configure<CommunicationTypeSettings>(builder.Configuration.GetSection(COMMUNICATION_TYPE_SETTINGS_NAME));
-builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<CommunicationTypeSettings>>().Value);
-var communicationSettings = builder.Configuration.GetSection(COMMUNICATION_TYPE_SETTINGS_NAME).Get<CommunicationTypeSettings>();
+builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("KafkaSettings"));
+builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<KafkaSettings>>().Value);
 
-if (communicationSettings.Type == CommunicationType.Kafka)
+builder.Services.Configure<CommunicationTypeSettings>(builder.Configuration.GetSection("CommunicationTypeSettings"));
+builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<CommunicationTypeSettings>>().Value);
+var communicationType = builder.Configuration.GetSection("CommunicationTypeSettings").Get<CommunicationTypeSettings>()?.Type;
+
+if (communicationType == CommunicationType.Kafka)
     builder.Services.AddHostedService<KafkaConsumerJob>();
-else if (communicationSettings.Type == CommunicationType.RabbitMQ)
+else if (communicationType == CommunicationType.RabbitMQ)
     builder.Services.AddHostedService<KafkaConsumerJob>();
 
 
@@ -28,9 +30,7 @@ builder.Services.AddTransient<IProducerSingalR>(s =>
 
 builder.Services.AddTransient<IKafkaService>(p =>
     new KafkaService(
-        builder.Configuration["kafkaConfig:TopicName"] ?? throw new Exception(),
-        builder.Configuration["kafkaConfig:BootstrapServer"] ?? throw new Exception(),
-        builder.Configuration["kafkaConfig:GroupId"] ?? throw new Exception(),
+        p.GetService<KafkaSettings>(),
         p.GetService<ILogger<KafkaService>>()
     )
 );

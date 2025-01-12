@@ -1,5 +1,6 @@
 ﻿using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
+using webchat.crosscutting.Settings;
 
 namespace webchat.crosscutting.MessageBroker.Kafka;
 
@@ -8,30 +9,28 @@ public sealed class KafkaService : IKafkaService
     private readonly ProducerConfig _producerConfig;
     private readonly ConsumerConfig _consumerConfig;
     private readonly IConsumer<Ignore, string> _consumer;
-    private readonly string _topicName;
+    private readonly KafkaSettings _kafkaSettings;
     private readonly ILogger<KafkaService> _logger;
 
     public KafkaService
     (
-        string topicName,
-        string bootstrapServers,
-        string groupId,
+        KafkaSettings kafkaSettings,
         ILogger<KafkaService> logger
     )
     {
-        _topicName = topicName;
+        _kafkaSettings = kafkaSettings;
 
         _producerConfig = new ProducerConfig
         {
-            BootstrapServers = bootstrapServers,
+            BootstrapServers = kafkaSettings.BootstrapServer,
             AllowAutoCreateTopics = true,
             Acks = Acks.All
         };
 
         _consumerConfig = new ConsumerConfig
         {
-            BootstrapServers = bootstrapServers,
-            GroupId = groupId,
+            BootstrapServers = kafkaSettings.BootstrapServer,
+            GroupId = kafkaSettings.GroupId,
             AutoOffsetReset = AutoOffsetReset.Earliest // removes from the topic
         };
         _consumer = new ConsumerBuilder<Ignore, string>(_consumerConfig).Build();
@@ -47,7 +46,7 @@ public sealed class KafkaService : IKafkaService
         {
             var deliveryResult = await producer.ProduceAsync
                 (
-                    topic: _topicName,
+                    topic: _kafkaSettings.TopicName,
                     new Message<Null, string>
                     {
                         Value = message
@@ -69,5 +68,5 @@ public sealed class KafkaService : IKafkaService
         _consumer;
 
     public string GetTopicName() =>
-        _topicName;
+        _kafkaSettings.TopicName;
 }
