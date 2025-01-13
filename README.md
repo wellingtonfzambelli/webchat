@@ -10,6 +10,4 @@ Here's an enhanced explanation of your PoC that demonstrates how to integrate .N
 - SignalR
 - Kafka
 - HTML, CSS, Javascript
-- Randon Avatar _(https://avatar-placeholder.iran.liara.run)_
-- Chat Template _(https://www.bootdey.com/)_
 - Visual Studio 2022
