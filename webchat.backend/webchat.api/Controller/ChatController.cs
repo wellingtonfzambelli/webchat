@@ -57,7 +57,7 @@ public sealed class ChatController : ControllerBase
                     return BadRequest($"Unsupported communication type: {_communicationType}");
             }
 
-            return NoContent();
+            return Created();
         }
         catch (Exception ex)
         {

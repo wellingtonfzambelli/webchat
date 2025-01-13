@@ -16,12 +16,9 @@ builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<Communication
 builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("KafkaSettings"));
 builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<KafkaSettings>>().Value);
 
-
 builder.Services.AddTransient<IRabbitMQService, RabbitMQService>();
 builder.Services.AddSingleton<IChatHubService, ChatHubService>();
 builder.Services.AddTransient<IKafkaService, KafkaService>();
-
-
 
 // CORS
 builder.Services.AddCors(options =>

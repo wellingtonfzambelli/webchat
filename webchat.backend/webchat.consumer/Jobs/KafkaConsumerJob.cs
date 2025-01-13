@@ -16,20 +16,20 @@ internal sealed class KafkaConsumerJob : BackgroundService
 
     public KafkaConsumerJob
     (
-        IKafkaService userKafka,
+        IKafkaService kafkaService,
         IProducerSingalR producerSignalR,
         ILogger<KafkaConsumerJob> logger
     )
-        : this(userKafka)
+        : this(kafkaService)
     {
         _producerSignalR = producerSignalR;
         _logger = logger;
     }
 
-    private KafkaConsumerJob(IKafkaService userKafka)
+    private KafkaConsumerJob(IKafkaService kafkaService)
     {
-        _kafkaConsumer = userKafka.GetConsumer();
-        _kafkaConsumer.Subscribe(userKafka.GetTopicName());
+        _kafkaConsumer = kafkaService.GetConsumer();
+        _kafkaConsumer.Subscribe(kafkaService.GetTopicName());
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
