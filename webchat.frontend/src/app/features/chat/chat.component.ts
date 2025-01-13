@@ -18,8 +18,8 @@ import { ChatMessageComponent } from "./chat-message/chat-message.component";
     ChatMessageComponent,
     TitleCasePipe,
     NgFor,
-    NgIf
-  ],
+    NgIf    
+],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss'
 })
