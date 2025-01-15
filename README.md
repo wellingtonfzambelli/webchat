@@ -1,5 +1,5 @@
 # About
-Here's an enhanced explanation of your PoC that demonstrates how to integrate .NET 8 with SignalR, REST API, a Message Broker, a Background Service, and a WebSocket connection with an Angular 18 client.
+This PoC demonstrates how to use .NET 8 to send messages from a REST API to a message broker (like RabbitMQ). A background service consumes those messages from the broker and sends them to an Angular 18 application via SignalR WebSockets.
 
 # Stacks of the project
 - .NET 8
