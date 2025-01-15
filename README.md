@@ -20,6 +20,6 @@ Here's an enhanced explanation of your PoC that demonstrates how to integrate .N
 # Screenshots
 
 <div align="left">  
-    <img src="https://github.com/user-attachments/assets/09b7f487-078b-4a31-b918-7874767e3940" width="30%">
-    <img src="screenshots/cart-empty.jpg" width="30%">    
+    <img src="https://github.com/user-attachments/assets/09b7f487-078b-4a31-b918-7874767e3940" width="50%">
+    <img src="https://github.com/user-attachments/assets/33138591-ac75-420f-b69e-82e613a83cc6" width="50%">    
 </div>
